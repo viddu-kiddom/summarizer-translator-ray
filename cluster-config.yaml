@@ -1,5 +1,5 @@
 # An unique identifier for the head node and workers of this cluster.
-cluster_name: summarizer-translator
+cluster_name: kiddom-ray-cluster
 
 # Cloud-provider specific configuration.
 provider:
@@ -7,6 +7,15 @@ provider:
     region: us-east-1
     availability_zone: us-east-1a, us-east-1b, us-east-1c
 
+docker:
+  image: "rayproject/ray:latest-cpu"
+  container_name: "ray_container"
+
+  run_options:
+   - --ulimit nofile=65536:65536
+
+auth:
+  ssh_user: ubuntu
 # The maximum number of workers nodes to launch in addition to the head
 # node.
 max_workers: 3
@@ -28,7 +37,7 @@ available_node_types:
         # http://boto3.readthedocs.io/en/latest/reference/services/ec2.html#EC2.ServiceResource.create_instances
         node_config:
             InstanceType: t3.large
-            Subnets: subnet-022c4e8e4393f9b75, subnet-0bc84ddcb25117798, subnet-06ce4aa5494478ae9, subnet-09cb0ced4c60da4d1
+#            Subnets: subnet-022c4e8e4393f9b75, subnet-0bc84ddcb25117798, subnet-06ce4aa5494478ae9, subnet-09cb0ced4c60da4d1
     ray.worker.default:
         # The minimum number of worker nodes of this type to launch.
         # This number should be >= 0.
@@ -48,4 +57,5 @@ available_node_types:
         # http://boto3.readthedocs.io/en/latest/reference/services/ec2.html#EC2.ServiceResource.create_instances
         node_config:
             InstanceType: t3.large
-            Subnets: subnet-022c4e8e4393f9b75, subnet-0bc84ddcb25117798, subnet-06ce4aa5494478ae9, subnet-09cb0ced4c60da4d1
+#            Subnets: subnet-022c4e8e4393f9b75, subnet-0bc84ddcb25117798, subnet-06ce4aa5494478ae9, subnet-09cb0ced4c60da4d1
+head_node_type: ray.head.default
