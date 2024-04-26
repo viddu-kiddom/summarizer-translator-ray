@@ -41,14 +41,12 @@ module "eks" {
 
   eks_managed_node_group_defaults = {
     ami_type = "AL2_x86_64"
-
   }
 
   eks_managed_node_groups = {
     one = {
       name = "node-group-1"
-
-      instance_types = ["t3.large"]
+      instance_types = ["m5.xlarge"]
 
       min_size     = 1
       max_size     = 3
@@ -57,8 +55,8 @@ module "eks" {
 
     two = {
       name = "node-group-2"
-
-      instance_types = ["t3.large"]
+      ami_type="BOTTLEROCKET_x86_64_NVIDIA"
+      instance_types = ["g5.xlarge"]
 
       min_size     = 1
       max_size     = 2

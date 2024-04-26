@@ -1,0 +1,70 @@
+apiVersion: ray.io/v1
+kind: RayService
+metadata:
+  name: summarizer-translator
+spec:
+  serveConfigV2: |
+    applications:
+      - name: summarizer-translator
+        import_path: main.summarizer
+        route_prefix: /
+        runtime_env:
+          pip:
+            - torch
+            - transformers
+        deployments:
+          - name: Translator
+            num_replicas: 1
+          - name: Summarizer
+            num_replicas: 1
+  rayClusterConfig:
+    rayVersion: '2.11.0'
+    headGroupSpec:
+      rayStartParams:
+        dashboard-host: '0.0.0.0'
+      #pod template
+      template:
+        spec:
+          containers:
+            - name: ray-head
+              image: 518240442847.dkr.ecr.us-east-1.amazonaws.com/summarizer-translator:latest
+              resources:
+                limits:
+                  cpu: 2
+                  memory: 2Gi
+                requests:
+                  cpu: 2
+                  memory: 2Gi
+              ports:
+                - containerPort: 6379
+                  name: gcs-server
+                - containerPort: 8265 # Ray dashboard
+                  name: dashboard
+                - containerPort: 10001
+                  name: client
+                - containerPort: 8000
+                  name: serve
+    workerGroupSpecs:
+      # the pod replicas in this group typed worker
+      - replicas: 1
+        minReplicas: 1
+        maxReplicas: 5
+        groupName: small-group
+        rayStartParams: {}
+        #pod template
+        template:
+          spec:
+            containers:
+              - name: ray-worker
+                image: 518240442847.dkr.ecr.us-east-1.amazonaws.com/summarizer-translator:latest
+                lifecycle:
+                  preStop:
+                    exec:
+                      command: ["/bin/sh","-c","ray stop"]
+                resources:
+                  limits:
+                    cpu: "1"
+                    memory: "2Gi"
+                  requests:
+                    cpu: "500m"
+                    memory: "2Gi"
