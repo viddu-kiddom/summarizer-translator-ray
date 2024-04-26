@@ -8,11 +8,14 @@ provider:
     availability_zone: us-east-1a, us-east-1b, us-east-1c
 
 docker:
-  image: "rayproject/ray:latest-cpu"
+  image: "518240442847.dkr.ecr.us-east-1.amazonaws.com/summarizer-translator:latest"
   container_name: "ray_container"
 
   run_options:
    - --ulimit nofile=65536:65536
+
+initialization_commands:
+  - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 518240442847.dkr.ecr.us-east-1.amazonaws.com
 
 auth:
   ssh_user: ubuntu
